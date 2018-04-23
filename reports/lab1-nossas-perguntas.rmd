@@ -1,0 +1,55 @@
+---
+title: "Lab 1 - Nossas Perguntas"
+author: "Gabriel Morais Lúcio de Araújo"
+date: "23 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(plotly)
+library(scales)
+theme_set(theme_bw())
+```
+
+```{r}
+dados = read_csv(here("data/series_from_imdb.csv"), 
+                    progress = FALSE,
+                    col_types = cols(.default = col_double(), 
+                                     series_name = col_character(), 
+                                     episode = col_character(), 
+                                     url = col_character(),
+                                     season = col_character())) %>% filter(series_name %in% c("Black Mirror", "Mr Robot"))
+
+series <- dados %>% group_by(series_name) %>%
+  summarise(n = n()) 
+```
+
+```{r}
+medias <- dados %>%
+  group_by(series_name) %>%
+  summarise(mediana = median(user_rating), media = mean(user_rating), max_rating = max(user_rating), min_rating = min(user_rating)) %>%
+  ggplot(aes(x = series_name, y = mediana)) +
+  geom_bar(stat="identity")
+
+boxplot.medias <- dados %>%
+  ggplot(aes(x = "", y = user_rating)) +
+  geom_boxplot(width = .4, outlier.color = NA) +
+  facet_wrap(~ series_name) +
+  geom_jitter(width = .1, size = 2, alpha = .5, aes(color = season)) +
+  labs('Série mais bem avaliada IMDB', x = 'Série', y = 'Notas de Usuário', color = 'Temporada')
+
+boxplot.medias
+
+line.medias <- dados %>%
+  ggplot(aes(x = season_ep, y = user_rating, color = season, group = season)) + 
+  geom_line() + 
+  geom_point() +
+  facet_wrap(~ series_name) +
+  labs('Série mais bem avaliada IMDB', x = 'Episódio', y = 'Notas de Usuário', color = 'Temporada')
+
+line.medias
+```
+
