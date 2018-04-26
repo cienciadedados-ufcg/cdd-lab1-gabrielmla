@@ -32,12 +32,6 @@ series <- dados %>% group_by(series_name) %>%
 #### Qual das séries que você escolheu é mais bem avaliada no IMDB? A diferença é grande? Pequena? Muda de acordo com as temporadas da série?
 
 ```{r}
-medias <- dados %>%
-  group_by(series_name, season) %>%
-  summarise(mediana = median(user_rating), media = mean(user_rating), max_rating = max(user_rating), min_rating = min(user_rating))
-
-medias
-
 boxplot.user_ratings <- dados %>%
   ggplot(aes(x = "", y = user_rating)) +
   geom_boxplot(width = .4, outlier.color = NA) +
@@ -128,6 +122,37 @@ Condiderei um episódio sem graça (*meh*) aquele que possui a maior proporção
 #### Episódios no início/fim da temporada são mais bem avaliados que os no meio? O que tende a ser melhor? Inícios ou finais de séries/temporadas?
 
 ```{r}
+inicio.geral <- dados %>% 
+    group_by(series_name) %>%
+    filter(season_ep == 1)
+inicio.geral$tipo <- rep(0,nrow(inicio.geral))
 
+fim.mrrobot.1 <- dados %>%
+    filter(season_ep == 10, season == 1, series_name == 'Mr Robot')
+fim.mrrobot.2 <- dados %>%
+    filter(season_ep == 10, season == 2, series_name == 'Mr Robot')
+
+fim.blackmirror.1 <- dados %>%
+    filter(season_ep == 3, season == 1, series_name == 'Black Mirror')
+fim.blackmirror.2 <- dados %>%
+    filter(season_ep == 4, season == 2, series_name == 'Black Mirror')
+fim.blackmirror.3 <- dados %>%
+    filter(season_ep == 6, season == 3, series_name == 'Black Mirror')
+
+fim.geral <- rbind(fim.blackmirror.1, fim.blackmirror.2, fim.blackmirror.3, fim.mrrobot.1, fim.mrrobot.2)
+fim.geral$tipo <- rep(1,nrow(fim.geral))
+
+dados.inicio.fim <- rbind.data.frame(inicio.geral, fim.geral)
+
+dados.ggplot <- dados.inicio.fim %>%
+    ggplot(aes(x = tipo, y = user_rating, color = season)) + 
+    geom_line() + 
+    geom_point() +
+    facet_wrap(~ series_name) +
+    scale_x_continuous(breaks = 0:1) +
+    labs('Pilot x Season Finale', x = 'Pilot(0) x Season Finale(1)', y = 'Notas de Usuário', color = 'Temporada')
+
+dados.ggplot
 ```
 
+Na série *Black Mirror* o início da temporada tende a ser pior que o final da temporada. Já para *Mr Robot* temos que a primeira temporada tem um início melhor que o seu final.
