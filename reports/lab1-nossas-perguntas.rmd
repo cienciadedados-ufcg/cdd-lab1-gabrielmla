@@ -26,7 +26,9 @@ dados = read_csv(here("data/series_from_imdb.csv"),
 series <- dados %>% group_by(series_name) %>%
   summarise(n = n()) 
 ```
+
 ***
+
 #### Qual das séries que você escolheu é mais bem avaliada no IMDB? A diferença é grande? Pequena? Muda de acordo com as temporadas da série?
 
 ```{r}
@@ -62,3 +64,70 @@ line.user_ratings
 ```
 
 Podemos ver que *Mr Robot* não possui uma variação muito notável nas notas de seus episódios, já em *Black Mirror* é possível notar que a 2ª e 3ª temporada possuem um episódio, em cada, que tem uma qualidade bem mais inferior que o restante dos episódios. Inclusive, temos na 2ª temporada o episódio pior avaliado e em seguida temos o melhor avaliado da série, com uma diferença de aproximadamente **2.0**(*The Waldo Moment* tem uma nota 22% menor que a nota do episódio *White Christmas*.
+
+Assim, *Black Mirror* tem uma qualidade mais irregular de episódios. Como assisto a série, posso dizer que isso se aplica devido ao fato que os episódios da série são independentes, ou seja, cada um tem a sua história com ínicio, meio e fim. Assim alguns roteiros se destacam muito mais em relação a outros, nem sempre a série consegue manter um nível muito alto, como em **White Christmas** (meu episódio favorito da série).
+
+***
+
+### Extras
+
+#### Qual das séries ou temporadas tem episódios mais sem graça? (Um episódio é sem graça se ninguém nem ama nem odeia ele)
+
+```{r}
+odiado.r1 <- dados %>% 
+  ggplot(aes(x = season_ep, y = r1, color = series_name)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_grid(series_name ~ season) +
+  scale_x_continuous(breaks = 1:12) +
+  labs('Episódio mais odiado', x = 'Episódio', y = 'Prop. de notas 1', color = 'Série')
+
+odiado.r1
+```
+
+```{r}
+amado.r10 <- dados %>%
+  ggplot(aes(x = season_ep, y = r10, color = series_name)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_grid(series_name ~ season) +
+  scale_x_continuous(breaks = 1:12) +
+  labs('Episódio mais amado', x = 'Episódio', y = 'Prop. de notas entre 10', color = 'Série')
+
+amado.r10
+```
+
+Podemos ver os como se comportam a proporções de episódios mais amados e mais odiados nas séries. *Mr Robot* tem uma correlação muito baixa, os episódios da série tendem a manter um nível que agrada os fãs de forma geral. Diferente de *Black Mirror* que tem uma variação maior, porém possui menos episódios para uma melhor análise.
+
+```{r}
+meh.r5 <- dados %>%
+  ggplot(aes(x = season_ep, y = r5, color = series_name)) +
+  geom_point() +
+  geom_smooth(method = lm) +
+  facet_grid(series_name ~ season) +
+  scale_x_continuous(breaks = 1:12)
+
+meh.r5
+```
+
+```{r}
+dados <- dados %>% mutate(meh = r4 + r5 + r6) # meh = soma das proporções entre r4, r5 e r6
+
+meh.bar <- dados %>%
+  ggplot(aes(x = season_ep, y = meh, fill = meh)) +
+  geom_bar(stat="identity") +
+  facet_grid(series_name ~ season) +
+  scale_x_continuous(breaks = 1:12) +
+  labs('Episódio mais sem graça', x = 'Episódio', y = 'Prop. de notas entre 4-6', fill = 'Temporada')
+
+meh.bar
+```
+
+Condiderei um episódio sem graça (*meh*) aquele que possui a maior proporção de notas entre 4 e 6. Descobrimos aqui que o 2° episódio da 2ª temporada de *Black Mirror* é o episódio mais sem graça das duas séries. Foi algo inexperado para mim, pensei que o episódio pior avaliado (o 3º episódio da 2ª temporada) teria uma proporção de 'meh' maior do que os outros, porém a proporção de 'meh' dele está bem parecida com a de outros episódios. Por outro lado temos o episódio mais bem avaliado de *Black Mirror* com menor 'meh' da série. 
+
+#### Episódios no início/fim da temporada são mais bem avaliados que os no meio? O que tende a ser melhor? Inícios ou finais de séries/temporadas?
+
+```{r}
+
+```
+
