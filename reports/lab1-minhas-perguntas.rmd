@@ -1,0 +1,95 @@
+---
+title: "la1-minhas-perguntas"
+author: "Gabriel Morais Lúcio de Araújo"
+date: "30 de abril de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(plotly)
+library(scales)
+theme_set(theme_bw())
+```
+
+## Sobre os dados
+
+```{r warning=FALSE}
+dados = read_csv(here("data/series_from_imdb.csv"), 
+                    progress = FALSE,
+                    col_types = cols(.default = col_double(), 
+                                     series_name = col_character(), 
+                                     episode = col_character(), 
+                                     url = col_character(),
+                                     season = col_character())) %>% filter(series_name %in% c("Black Mirror", "Mr Robot", "13 Reasons Why"))
+```
+
+## Quanto maior o número de episódios, mais popular a série?
+
+```{r}
+n_episodes.popularity <- dados %>%
+  
+  ggplot(aes(x = season_ep, y = user_votes, color = series_name)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(season ~ series_name) +
+  scale_x_continuous(breaks = 1:13) +
+  labs('Episódio mais odiado', x = 'Episódio', y = 'Prop. de notas 1', color = 'Série')
+
+n_episodes.popularity
+
+series <- dados %>% group_by(series_name) %>%
+  summarise(n = n(), popularity = sum(user_votes) / n) 
+series
+```
+
+Aqui utilizei um grafíco de linhas, onde x é um episódio e y é a quantidade de votos desse episódio. Antes de realizar a análise, eu imaginei que quanto maior o número de episódios mais popular a série, porém aqui vi que isso não é o que ocorre. Como pode-se ver, a série *Black Mirror* possui 3 episódios na 1ª temporada, 4 na 2ª temporada e 6 na 3ª temporada (totalizando 13 episódios), e é a série mais popular, em todas as temporadas. Na tabela abaixo do gráfico podemos ver que a popularidade média de cada episódio de *Black Mirror* é 12519, quase **3x maior** que a média dos episódios de Mr Robot que fica com 4469.
+
+## Inícios e finais de temporadas são mais amados ou mais odiados?
+
+```{r}
+inicio.geral <- dados %>% 
+    group_by(series_name) %>%
+    filter(season_ep == 1)
+inicio.geral$tipo <- rep(0,nrow(inicio.geral))
+
+fim.mrrobot.1 <- dados %>%
+    filter(season_ep == 10, season == 1, series_name == 'Mr Robot')
+fim.mrrobot.2 <- dados %>%
+    filter(season_ep == 10, season == 2, series_name == 'Mr Robot')
+
+fim.blackmirror.1 <- dados %>%
+    filter(season_ep == 3, season == 1, series_name == 'Black Mirror')
+fim.blackmirror.2 <- dados %>%
+    filter(season_ep == 4, season == 2, series_name == 'Black Mirror')
+fim.blackmirror.3 <- dados %>%
+    filter(season_ep == 6, season == 3, series_name == 'Black Mirror')
+
+fim.geral <- rbind(fim.blackmirror.1, fim.blackmirror.2, fim.blackmirror.3, fim.mrrobot.1, fim.mrrobot.2)
+fim.geral$tipo <- rep(1,nrow(fim.geral))
+
+dados.inicio.fim <- rbind.data.frame(inicio.geral, fim.geral)
+
+dados.ggplot.odiado <- dados.inicio.fim %>%
+    ggplot(aes(x = tipo, y = r1, color = season)) + 
+    geom_line() + 
+    geom_point() +
+    facet_wrap(~ series_name) +
+    scale_x_continuous(breaks = 0:1) +
+    labs('Pilot x Season Finale', x = 'Pilot(0) x Season Finale(1)', y = 'Notas de Usuário', color = 'Temporada')
+
+dados.ggplot.odiado
+
+dados.ggplot.amado <- dados.inicio.fim %>%
+    ggplot(aes(x = tipo, y = r10, color = season)) + 
+    geom_line() + 
+    geom_point() +
+    facet_wrap(~ series_name) +
+    scale_x_continuous(breaks = 0:1) +
+    labs('Pilot x Season Finale', x = 'Pilot(0) x Season Finale(1)', y = 'Notas de Usuário', color = 'Temporada')
+
+dados.ggplot.amado
+```
+
