@@ -15,6 +15,7 @@ theme_set(theme_bw())
 ```
 
 ## Sobre os dados
+Esta análise foi realizada utilizando dados sobre avaliações de episódios de séries presentes no IMDB até julho de 2017, nesse relátorio se encontram análises para as séries *Black Mirror*, *Mr Robot* e *13 Reasons Why*. Mais informações sobre esses dados podem ser encontradas [neste](https://github.com/nazareno/imdb-series) repositório.
 
 ```{r warning=FALSE}
 dados = read_csv(here("data/series_from_imdb.csv"), 
@@ -55,6 +56,9 @@ inicio.geral <- dados %>%
     filter(season_ep == 1)
 inicio.geral$tipo <- rep(0,nrow(inicio.geral))
 
+fim.13reasons <- dados %>%
+    filter(season_ep == 13, season == 1, series_name == '13 Reasons Why')
+
 fim.mrrobot.1 <- dados %>%
     filter(season_ep == 10, season == 1, series_name == 'Mr Robot')
 fim.mrrobot.2 <- dados %>%
@@ -67,29 +71,42 @@ fim.blackmirror.2 <- dados %>%
 fim.blackmirror.3 <- dados %>%
     filter(season_ep == 6, season == 3, series_name == 'Black Mirror')
 
-fim.geral <- rbind(fim.blackmirror.1, fim.blackmirror.2, fim.blackmirror.3, fim.mrrobot.1, fim.mrrobot.2)
+fim.geral <- rbind(fim.blackmirror.1, fim.blackmirror.2, fim.blackmirror.3, fim.mrrobot.1, fim.mrrobot.2, fim.13reasons)
 fim.geral$tipo <- rep(1,nrow(fim.geral))
 
 dados.inicio.fim <- rbind.data.frame(inicio.geral, fim.geral)
+```
 
+Essa pergunta será respondida da seguinte forma: serão plotados gráficos de linha, onde o primeiro ponto é o 1º episódio da temporada (pilot) e o segundo ponto é o último episódio da temporada (finale). Para julgar um episódio como odiado ou amado utilizei as váriaves **r1** (proporção de usuários que votaram 1 estrela) e **r10** (proporção de usuários que votaram 10 estrelas), respectivamente.
+
+#### Odiei **grr**
+
+```{r}
 dados.ggplot.odiado <- dados.inicio.fim %>%
     ggplot(aes(x = tipo, y = r1, color = season)) + 
     geom_line() + 
     geom_point() +
-    facet_wrap(~ series_name) +
+    facet_grid(season ~ series_name) +
     scale_x_continuous(breaks = 0:1) +
     labs('Pilot x Season Finale', x = 'Pilot(0) x Season Finale(1)', y = 'Notas de Usuário', color = 'Temporada')
 
 dados.ggplot.odiado
+```
 
+Analisando a primeira linha (com a primeira temporada de cada série) podemos ver que nas três séries o season finale foi mais odiado que o pilot. Na segunda temporada temos duas séries, *13 Reasons Why* possui apenas uma temporada até o momento, aqui temos o que o pilot foi mais odiado que o season finale, no baso de black mirror também podemos notar que a proporção de **r1** foi muito baixa (menos de 1% dos usuários deram nota 1 para tanto o pilot como o season finale). Na terceira temporada temos apenas a série *Black Mirror*, e aqui temos novamente que o pilot foi mais odiado que o season finale.
+
+#### Amei **s2**
+
+```{r}
 dados.ggplot.amado <- dados.inicio.fim %>%
     ggplot(aes(x = tipo, y = r10, color = season)) + 
     geom_line() + 
     geom_point() +
-    facet_wrap(~ series_name) +
+    facet_grid(season ~ series_name) +
     scale_x_continuous(breaks = 0:1) +
     labs('Pilot x Season Finale', x = 'Pilot(0) x Season Finale(1)', y = 'Notas de Usuário', color = 'Temporada')
 
 dados.ggplot.amado
 ```
 
+Aqui na análise dos episódios (pilot e season finale) amados temos na primeira linha 3 casos diferentes. Para *13 Reasons Why* o season finale foi muito mais amado que o pilot (70% dos usuários votaram 10 para o season finale, contra apenas 30% para o pilot); em *Black Mirror* temos o pilot mais amado que o season finale, porém uma diferença de 'amor' menor que em *13 Reasons Why*; por fim em *Mr Robot* temos que o pilot e o season finale possuem uma mesma proporção de amor de 60%. Para segunda temporada de *Black Mirror* e *Mr Robot* temos que o season finale foi mais amado que o pilot em ambas as séries; para a terceira temporada (apenas com Black Mirror) temos que o pilot foi mais amado que o season finale.
