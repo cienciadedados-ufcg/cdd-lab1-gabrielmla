@@ -63,7 +63,7 @@ fim.13reasons <- dados %>%
 fim.mrrobot.1 <- dados %>%
     filter(season_ep == 10, season == 1, series_name == 'Mr Robot')
 fim.mrrobot.2 <- dados %>%
-    filter(season_ep == 10, season == 2, series_name == 'Mr Robot')
+    filter(season_ep == 12, season == 2, series_name == 'Mr Robot')
 
 fim.blackmirror.1 <- dados %>%
     filter(season_ep == 3, season == 1, series_name == 'Black Mirror')
@@ -169,7 +169,7 @@ mrrobot <- dados %>% filter(series_name == 'Mr Robot')
 cor(mrrobot$r1, mrrobot$user_votes)
 ```
 
-Analisando o **ódio** (`r1`) primeiro é possível ver um comportamento estranho entre as séries escolhidas. Em *13 Reasons Why* e *Mr Robot* ambos possuem uma correlação linear negativa, quanto maior o ódio (eita x), menor a quantidade de votos de um episódio (eixo y). Já em *Black Mirror* existe uma correlação linear positiva, porém é bem baixa , apenas **0.09**. E novamente os pontos de *13 Reasons Why* estão bem mais concentrados ao redor da linha de correlação do que as outras séries.
+Analisando o **ódio** (`r1`) primeiro é possível ver um comportamento estranho entre as séries escolhidas. Em *13 Reasons Why* e *Mr Robot* ambos possuem uma correlação linear negativa, quanto maior o ódio (eixo x), menor a quantidade de votos de um episódio (eixo y). Já em *Black Mirror* existe uma correlação linear positiva, porém é bem baixa , apenas **0.09**. E novamente os pontos de *13 Reasons Why* estão bem mais concentrados ao redor da linha de correlação do que as outras séries.
 
 ```{r}
 uservotes.r10 <- dados %>% 
