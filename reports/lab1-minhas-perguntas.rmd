@@ -33,9 +33,8 @@ dados = read_csv(here("data/series_from_imdb.csv"),
 ```{r}
 n_episodes.popularity <- dados %>%
   
-  ggplot(aes(x = season_ep, y = user_votes, color = series_name)) +
-  geom_line() +
-  geom_point() +
+  ggplot(aes(x = season_ep, y = user_votes, fill = series_name)) +
+  geom_area() +
   facet_grid(season ~ series_name) +
   scale_x_continuous(breaks = 1:13) +
   labs('Episódio mais odiado', x = 'Episódio', y = 'Prop. de notas 1', color = 'Série')
@@ -43,7 +42,7 @@ n_episodes.popularity <- dados %>%
 n_episodes.popularity
 
 series <- dados %>% group_by(series_name) %>%
-  summarise(n = n(), popularity = sum(user_votes) / n) 
+  summarise(n = n(), popularity = sum(user_votes) / n)
 series
 ```
 
@@ -116,34 +115,6 @@ Aqui na análise dos episódios (pilot e season finale) amados temos na primeira
 
 Para respondeu esta pergunta irei analisar os episódios mais votados das séries e ver se eles estão relacionados com as notas e se são amados ou não.
 
-#### Notas
-
-```{r}
-uservotes.userrating <- dados %>% 
-  ggplot(aes(x = user_rating, y = user_votes, color = series_name)) +
-  geom_point() +
-  geom_smooth(method = lm, aes(color = 'blue')) +
-  facet_wrap(~ series_name) +
-  scale_color_discrete(name="Série",
-                       breaks=c("13 Reasons Why", "Black Mirror", "Mr Robot"),
-                       labels=c("13 Reasons Why", "Black Mirror", "Mr Robot")) +
-  labs('Episódio mais odiado', x = 'Episódio', y = 'Prop. de notas 1', color = 'Série')
-
-uservotes.userrating
-
-reasonswhy <- dados %>% filter(series_name == '13 Reasons Why')
-cor(reasonswhy$user_rating, reasonswhy$user_votes)
-
-blackmirror <- dados %>% filter(series_name == 'Black Mirror')
-cor(blackmirror$user_rating, blackmirror$user_votes)
-
-mrrobot <- dados %>% filter(series_name == 'Mr Robot')
-cor(mrrobot$user_rating, mrrobot$user_votes)
-```
-
-Utizarei esse gráfico para visualizar a correlação entre o número de votos e a avalição do episódio, ou seja, ver se quanto maior a avaliação, maior a quantidade de votos.
-Nas três séries exite uma correlação linear positiva entre o número de votos e a avaliação do episódio. No caso de *Mr Robot* a correlação não é alta (**0.23**), já para *13 Reasons Why* e *Black Mirror* ela é (**0.50**) e (**0.48**), respectivamente. Em *13 Reasons Why* os pontos estão mais concetrados ao redor da linha, apesar de ser menos inclinada que em *Black Mirror*, que possui os dados mais espalhados.
-
 #### Amor e Ódio
 
 ```{r}
@@ -194,4 +165,34 @@ mrrobot <- dados %>% filter(series_name == 'Mr Robot')
 cor(mrrobot$r10, mrrobot$user_votes)
 ```
 
-Analisando o **amor** (`r10`) vemos um comportamento mais esperado. Aqui as três séries possuem uma correlação linear positiva, ou seja, quanto maior o amor (eixo x), maior a qunatidade de votos (eixo y). E novamente a série *13 Reasons Why* possui a maior correlação entre as trẽs, devido aos seus dados estarem mais concentrados ao redor da linha de correlação.
+Analisando o **amor** (`r10`) vemos um comportamento mais esperado. Aqui as três séries possuem uma correlação linear positiva, ou seja, quanto maior o amor (eixo x), maior a qunatidade de votos (eixo y). E novamente a série *13 Reasons Why* possui a maior correlação entre as trẽs, devido aos seus dados estarem mais concentrados ao redor da linha de correlação. Aparetemente a *fan base* essa série possui uma *fan base* que a ama bastante.
+
+## Episódios que recebem mais votos de usuários possuem uma melhor avaliação?
+
+#### Notas
+
+```{r}
+uservotes.userrating <- dados %>% 
+  ggplot(aes(x = user_rating, y = user_votes, color = series_name)) +
+  geom_point() +
+  geom_smooth(method = lm, aes(color = 'blue')) +
+  facet_wrap(~ series_name) +
+  scale_color_discrete(name="Série",
+                       breaks=c("13 Reasons Why", "Black Mirror", "Mr Robot"),
+                       labels=c("13 Reasons Why", "Black Mirror", "Mr Robot")) +
+  labs('Episódio mais odiado', x = 'Episódio', y = 'Prop. de notas 1', color = 'Série')
+
+uservotes.userrating
+
+reasonswhy <- dados %>% filter(series_name == '13 Reasons Why')
+cor(reasonswhy$user_rating, reasonswhy$user_votes)
+
+blackmirror <- dados %>% filter(series_name == 'Black Mirror')
+cor(blackmirror$user_rating, blackmirror$user_votes)
+
+mrrobot <- dados %>% filter(series_name == 'Mr Robot')
+cor(mrrobot$user_rating, mrrobot$user_votes)
+```
+
+Utizarei esse gráfico para visualizar a correlação entre o número de votos e a avalição do episódio, ou seja, ver se quanto maior a avaliação, maior a quantidade de votos.
+Nas três séries exite uma correlação linear positiva entre o número de votos e a avaliação do episódio. No caso de *Mr Robot* a correlação não é alta (**0.23**), já para *13 Reasons Why* e *Black Mirror* ela é (**0.50**) e (**0.48**), respectivamente. Em *13 Reasons Why* os pontos estão mais concetrados ao redor da linha, apesar de ser menos inclinada que em *Black Mirror*, que possui os dados mais espalhados.
