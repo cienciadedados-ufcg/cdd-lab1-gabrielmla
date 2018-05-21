@@ -42,7 +42,7 @@ boxplot.user_ratings <- dados %>%
 boxplot.user_ratings
 ```
 
-Considero a série mais bem avaliada como sendo a com maior mediana. Então temos a série *Black Mirror* com mediana = **8.3** e a série *Mr Robot* com mediana = **8.8**. A diferença não é grande, chegando a maior diferença de **0.6** entre a mediana da 2ª temporada de ambas as séries. Algo interessante é que na 2 temporada de *Black Mirror* temos tanto o episódio mais bem avaliado quanto o episódio pior avaliado, sendo o episódio *White Christmas* com nota **9.1** e o eposódio *The Waldo Moment* com nota **7.0**.
+Considero a série mais bem avaliada como sendo a com maior mediana. Então temos a série *Black Mirror* com mediana = **8.3** e a série *Mr Robot* com mediana = **8.8**. A diferença não é grande, chegando a maior diferença de **0.6** entre a mediana da 2ª temporada de ambas as séries. Algo interessante é que na 2 temporada de *Black Mirror* temos tanto o episódio mais bem avaliado quanto o episódio pior avaliado, sendo o episódio *White Christmas* com nota **9.1** e o episódio *The Waldo Moment* com nota **7.0**.
 
 #### Qual das séries que você escolheu tem episódios de qualidade mais irregular segundo o IMDB? A diferença é grande? Pequena?
 
@@ -57,7 +57,7 @@ line.user_ratings <- dados %>%
 line.user_ratings
 ```
 
-Podemos ver que *Mr Robot* não possui uma variação muito notável nas notas de seus episódios, já em *Black Mirror* é possível notar que a 2ª e 3ª temporada possuem um episódio, em cada, que tem uma qualidade bem mais inferior que o restante dos episódios. Inclusive, temos na 2ª temporada o episódio pior avaliado e em seguida temos o melhor avaliado da série, com uma diferença de aproximadamente **2.0**(*The Waldo Moment* tem uma nota 22% menor que a nota do episódio *White Christmas*.
+Podemos ver que *Mr Robot* não possui uma variação muito notável nas notas de seus episódios. Já em *Black Mirror* é possível notar que a 2ª e 3ª temporada possuem um episódio, em cada, que apresentam uma qualidade bem mais inferior que o restante dos episódios. Inclusive, temos na 2ª temporada o episódio pior avaliado e em seguida temos o melhor avaliado da série, com uma diferença de aproximadamente **2.0**(*The Waldo Moment* tem uma nota 22% menor que a nota do episódio *White Christmas*.
 
 Assim, *Black Mirror* tem uma qualidade mais irregular de episódios. Como assisto a série, posso dizer que isso se aplica devido ao fato que os episódios da série são independentes, ou seja, cada um tem a sua história com ínicio, meio e fim. Assim alguns roteiros se destacam muito mais em relação a outros, nem sempre a série consegue manter um nível muito alto, como em **White Christmas** (meu episódio favorito da série).
 
@@ -156,3 +156,7 @@ dados.ggplot
 ```
 
 Na série *Black Mirror* o início da temporada tende a ser pior que o final da temporada. Já para *Mr Robot* temos que a primeira temporada tem um início melhor que o seu final.
+
+> Comentários
+
+>> Bom texto! Senti falta de uma breve explicação sobre o conjunto de dados que foi utilizado, para ajudar a situar o leitor com o texto. Uma sugestão é explicar melhor por que realizar algumas opções, como em escolher somente o recurso visual para explicar a irregularidade das séries ou escolher a série mais bem avaliada como sendo a com maior mediana e não escolher outra medida, por exemplo. Também seria legal utilizar o destaque dado para alguns episódios de modo que isso fosse refletido na representação gráfica, para que fosse possível visualizar a ênfase observada no texto. Também seria legal explicar o significado dos valores numéricos obtidos, para entendermos melhor o que deseja ser dito.
