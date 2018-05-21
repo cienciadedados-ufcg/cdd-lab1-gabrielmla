@@ -1,0 +1,10 @@
+---
+title: "Prob 2, CP 1 - Revisitando uma visualização sua"
+author: "Gabriel Morais Lúcio de Araújo"
+date: "21 de maio de 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
