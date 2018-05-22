@@ -7,4 +7,64 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(plotly)
+library(scales)
+theme_set(theme_bw())
 ```
+
+## Sobre os dados
+Esta análise foi realizada utilizando dados sobre avaliações de episódios de séries presentes no IMDB até julho de 2017, nesse relátorio se encontram análises para as séries *Black Mirror*, e *13 Reasons Why*. Mais informações sobre esses dados podem ser encontradas [neste](https://github.com/nazareno/imdb-series) repositório.
+
+```{r include=FALSE}
+dados = read_csv(here("data/series_from_imdb.csv"), 
+                    progress = FALSE,
+                    col_types = cols(.default = col_double(), 
+                                     series_name = col_character(), 
+                                     episode = col_character(), 
+                                     url = col_character(),
+                                     season = col_character())) %>% filter(series_name %in% c("13 Reasons Why", "Black Mirror"))
+
+series <- dados %>% group_by(series_name) %>%
+  summarise(n = n()) 
+```
+
+```{r}
+dados.13reasons <- dados %>% filter(series_name == '13 Reasons Why')
+dados.blackmirror <- dados %>% filter(series_name == 'Black Mirror')
+
+plot_ly(data=dados, x=~series_ep, y=~user_rating,
+        color=~series_name, colors = c("darkblue", "aquamarine4", "darkgoldenrod1", "coral", "darkred"),
+        text = ~paste("\nSérie: ", series_name, "\nEpisódio: ", series_ep, "\nAvaliação: ", user_rating, "\nNº votos: ", user_votes)) %>%
+   
+add_trace(size=~log(user_votes/sqrt(user_votes)), color=~series_name, alpha=0.9, visible="legendonly") %>%
+
+add_lines(data=dados.13reasons, x = ~series_ep, y=~fitted((loess(user_rating ~ as.numeric(series_ep))))) %>%
+add_lines(data=dados.blackmirror, x = ~series_ep, y=~fitted((loess(user_rating ~ as.numeric(series_ep))))) %>%
+
+layout(title="Notas gerais de episódios ao longo da série", 
+       yaxis = list(title="Avaliação geral do episódio"),
+       xaxis = list(title="Número do episódio na série", rangeslider = list(type = "numeric")))
+
+
+p <- plot_ly(dados.13reasons, x = dados.13reasons$season_ep, y = dados.13reasons$user_rating, name = '13 Reasons Why', mode = 'lines+markers') %>%
+  add_trace(dados.blackmirror, x = dados.blackmirror$season_ep, y = dados.blackmirror$user_rating, name = 'Black Mirror', mode = 'lines+markers') %>%
+  add_trace(dados.13reasons, x = dados.13reasons$season_ep, y = dados.13reasons$user_rating, name = '13 Reasons Why', mode = 'lines+markers')
+
+p.line.user_ratings <- dados %>%
+  plot_ly(x = dados$season_ep, y = dados$user_rating, type = 'scatter', mode = 'lines+markers')
+
+```
+
+
+```{r}
+line.user_ratings <- dados %>%
+  ggplot(aes(x = series_ep, y = user_rating, color = series_name)) + 
+  geom_line() + 
+  geom_point(aes(text = paste("User votes: ", dados$user_votes))) +
+  labs('Série mais bem avaliada IMDB', x = 'Episódio', y = 'Notas de Usuário', color = 'Temporada')
+
+ggplotly(line.user_ratings)
+```
+
